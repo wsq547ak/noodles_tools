@@ -1,0 +1,15 @@
+{
+  "name": "tiny-toolbox",
+  "private": true,
+  "workspaces": [
+    "apps/web"
+  ],
+  "scripts": {
+    "dev:web": "npm --workspace @tiny/web run dev",
+    "dev:picZip": "python3 -m services.picZip.server",
+    "dev": "npm run dev:web",
+    "build:web": "npm --workspace @tiny/web run build",
+    "lint:web": "npm --workspace @tiny/web run lint",
+    "test:picZip": "python3 -m unittest discover -s services/picZip/tests -v"
+  }
+}
