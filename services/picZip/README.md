@@ -12,8 +12,8 @@ Profiles:
 
 ## Endpoints
 
-- `GET /health`
-- `POST /compress`
+- `GET /tools/health`
+- `POST /tools/compress`
   - Headers:
     - `content-type: image/png` or `image/jpeg`
     - `x-compression-profile: balanced` or `aggressive`

@@ -19,7 +19,7 @@ class CompressionRequestHandler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
-        if parsed.path != "/health":
+        if parsed.path != "/tools/health":
             self._write_json(HTTPStatus.NOT_FOUND, {"error": "Not found"})
             return
 
@@ -27,7 +27,7 @@ class CompressionRequestHandler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:
         parsed = urlparse(self.path)
-        if parsed.path != "/compress":
+        if parsed.path != "/tools/compress":
             self._write_json(HTTPStatus.NOT_FOUND, {"error": "Not found"})
             return
 

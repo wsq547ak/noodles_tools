@@ -27,7 +27,7 @@ export class CompressionApiError extends Error {
 
 async function compressSingleFile(file: File): Promise<CompressionResult> {
   const arrayBuffer = await file.arrayBuffer();
-  const response = await fetch(`${SERVICE_URL}/compress`, {
+  const response = await fetch(`${SERVICE_URL}/tools/compress`, {
     method: "POST",
     headers: {
       "content-type": file.type,

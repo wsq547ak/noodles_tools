@@ -12,7 +12,7 @@ export async function compressImages(files: File[]) {
     formData.append("files", file);
   });
 
-  const response = await fetch("/api/picZip/compress", {
+  const response = await fetch("/tools/api/picZip/compress", {
     method: "POST",
     body: formData,
   });
