@@ -5,7 +5,7 @@ import io
 import shutil
 import subprocess
 from dataclasses import dataclass
-from enum import StrEnum
+from enum import Enum
 
 from PIL import Image
 from PIL import ImageChops
@@ -14,12 +14,12 @@ from PIL import PngImagePlugin
 SUPPORTED_MIME_TYPES = {"image/png", "image/jpeg"}
 
 
-class CompressionProfile(StrEnum):
+class CompressionProfile(str, Enum):
     BALANCED = "balanced"
     AGGRESSIVE = "aggressive"
 
 
-class PngCompressionMode(StrEnum):
+class PngCompressionMode(str, Enum):
     STRICT = "strict"
     VISUAL = "visual"
 
