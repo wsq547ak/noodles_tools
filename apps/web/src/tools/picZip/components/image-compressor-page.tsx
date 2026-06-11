@@ -1,5 +1,6 @@
 "use client";
 
+import JSZip from "jszip";
 import { useState, useTransition } from "react";
 import { compressImages } from "@/tools/picZip/client/compress-images";
 import { ACCEPTED_TYPES, isSupportedImage } from "@/tools/picZip/lib/file";
@@ -72,10 +73,31 @@ export function ImageCompressorPage() {
     anchor.click();
   }
 
-  function downloadAll() {
-    results.forEach((result, index) => {
-      window.setTimeout(() => downloadResult(result), index * 150);
-    });
+  async function downloadAll() {
+    if (results.length === 0) {
+      return;
+    }
+
+    if (results.length === 1) {
+      downloadResult(results[0]);
+      return;
+    }
+
+    const zip = new JSZip();
+
+    for (const result of results) {
+      const response = await fetch(result.dataUrl);
+      const blob = await response.blob();
+      zip.file(result.originalName, blob);
+    }
+
+    const content = await zip.generateAsync({ type: "blob" });
+    const url = URL.createObjectURL(content);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "compressed-images.zip";
+    anchor.click();
+    URL.revokeObjectURL(url);
   }
 
   return (
