@@ -1,3 +1,4 @@
+import path from "path";
 import type { NextConfig } from "next";
 
 const isProduction = process.env.NODE_ENV === "production";
@@ -7,6 +8,7 @@ const nextConfig: NextConfig = {
   basePath,
   reactStrictMode: true,
   output: "standalone",
+  outputFileTracingRoot: path.join(__dirname, "../.."),
   env: {
     NEXT_PUBLIC_BASE_PATH: basePath,
   },

@@ -9,6 +9,8 @@
     "dev:picZip": "python3 -m services.picZip.server",
     "dev": "npm run dev:web",
     "build:web": "npm --workspace @tiny/web run build",
+    "start:web": "PORT=4001 node apps/web/.next/standalone/apps/web/server.js",
+    "prod:web": "npm run build:web && npm run start:web",
     "lint:web": "npm --workspace @tiny/web run lint",
     "test:picZip": "python3 -m unittest discover -s services/picZip/tests -v"
   }
