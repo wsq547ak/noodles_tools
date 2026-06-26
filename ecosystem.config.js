@@ -13,7 +13,7 @@ module.exports = {
       max_memory_restart: "1G",
     },
     {
-      name: "piczip",
+      name: "tools_server",
       script: "python3",
       args: "-m services.picZip.server",
       env: {

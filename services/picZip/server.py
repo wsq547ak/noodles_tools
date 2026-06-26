@@ -27,7 +27,7 @@ class CompressionRequestHandler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:
         parsed = urlparse(self.path)
-        if parsed.path != "/tools/compress":
+        if parsed.path != "/tools/pic_compress":
             self._write_json(HTTPStatus.NOT_FOUND, {"error": "Not found"})
             return
 
