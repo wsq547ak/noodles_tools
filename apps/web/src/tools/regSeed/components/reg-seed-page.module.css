@@ -1,0 +1,492 @@
+.page {
+  width: min(1200px, calc(100vw - 40px));
+  margin: 0 auto;
+  padding: 32px 0 80px;
+}
+
+.hero {
+  margin-bottom: 28px;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  max-width: 18ch;
+  color: var(--ink);
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 650;
+  letter-spacing: -0.05em;
+  line-height: 1.05;
+}
+
+.subtitle {
+  margin: 14px 0 0;
+  max-width: 60ch;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  padding: 24px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.panelTitle {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1.2rem;
+  font-weight: 620;
+  letter-spacing: -0.02em;
+}
+
+.panelHint {
+  margin: 0 0 20px;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.badge,
+.statusPill,
+.statusPillActive {
+  flex-shrink: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  background: rgba(248, 250, 252, 0.9);
+}
+
+.statusPillActive {
+  color: var(--accent-strong);
+  background: rgba(37, 99, 235, 0.08);
+  border-color: rgba(37, 99, 235, 0.16);
+}
+
+.examples {
+  display: grid;
+  gap: 10px;
+}
+
+.exampleHeader,
+.exampleRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(160px, 240px) 36px;
+  gap: 10px;
+  align-items: center;
+}
+
+.exampleHeader {
+  padding: 0 12px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.exampleActionCell {
+  width: 36px;
+}
+
+.exampleRow {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.label {
+  color: var(--ink);
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.input,
+.textarea,
+.regexInput {
+  width: 100%;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--ink);
+  padding: 11px 13px;
+  font-size: 0.94rem;
+  transition:
+    border-color 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.input::placeholder,
+.textarea::placeholder,
+.regexInput::placeholder {
+  color: #94a3b8;
+}
+
+.input:focus,
+.textarea:focus,
+.regexInput:focus {
+  outline: none;
+  border-color: rgba(37, 99, 235, 0.32);
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.iconButton {
+  appearance: none;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    color 150ms ease,
+    background-color 150ms ease;
+}
+
+.iconButton:hover:not(:disabled) {
+  color: var(--danger);
+  background: rgba(185, 28, 28, 0.06);
+}
+
+.iconButton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.primaryButton,
+.secondaryButton,
+.tertiaryButton,
+.copyButton {
+  appearance: none;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 150ms ease,
+    opacity 150ms ease,
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+
+.primaryButton {
+  border: 0;
+  color: #fff;
+  background: linear-gradient(180deg, var(--accent-strong), var(--accent));
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.18);
+}
+
+.secondaryButton,
+.tertiaryButton,
+.copyButton {
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--ink);
+}
+
+.primaryButton:hover:not(:disabled),
+.secondaryButton:hover:not(:disabled),
+.tertiaryButton:hover:not(:disabled),
+.copyButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.primaryButton:active:not(:disabled),
+.secondaryButton:active:not(:disabled),
+.tertiaryButton:active:not(:disabled),
+.copyButton:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled,
+.tertiaryButton:disabled,
+.copyButton:disabled {
+  opacity: 0.45;
+  transform: none;
+  cursor: not-allowed;
+}
+
+.regexBox {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(248, 250, 252, 0.72);
+}
+
+.regexInputWrap {
+  display: flex;
+  gap: 8px;
+}
+
+.regexInput {
+  flex: 1 1 auto;
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    monospace;
+}
+
+.copyButton {
+  flex-shrink: 0;
+  padding: 10px 14px;
+}
+
+.explanation {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.divider {
+  height: 1px;
+  margin: 22px 0;
+  background: var(--line);
+}
+
+.resultsTitle {
+  margin: 0 0 12px;
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.testResults {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.testItem {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.testItemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.testIndex {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.testHit,
+.testMiss {
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.testHit {
+  color: #166534;
+  background: rgba(22, 101, 52, 0.08);
+}
+
+.testMiss {
+  color: var(--muted);
+  background: rgba(100, 116, 139, 0.08);
+}
+
+.testSample {
+  margin: 0 0 10px;
+  color: var(--ink);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  word-break: break-all;
+}
+
+.testOutputWrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.testOutputLabel {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.testOutput {
+  color: var(--accent-strong);
+  font-size: 0.95rem;
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.emptyState {
+  border: 1px dashed rgba(15, 23, 42, 0.14);
+  border-radius: 18px;
+  padding: 22px;
+  background: rgba(248, 250, 252, 0.6);
+}
+
+.emptyTitle {
+  margin: 0 0 6px;
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.error,
+.success {
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-size: 0.9rem;
+}
+
+.error {
+  border: 1px solid rgba(185, 28, 28, 0.14);
+  background: rgba(254, 242, 242, 0.9);
+  color: var(--danger);
+}
+
+.success {
+  border: 1px solid rgba(37, 99, 235, 0.12);
+  background: rgba(239, 246, 255, 0.9);
+  color: var(--accent-strong);
+}
+
+@media (max-width: 1080px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .page {
+    width: min(100vw - 24px, 1200px);
+    padding: 20px 0 48px;
+  }
+
+  .panel {
+    border-radius: 22px;
+    padding: 18px;
+  }
+
+  .exampleHeader {
+    display: none;
+  }
+
+  .exampleRow {
+    position: relative;
+    grid-template-columns: 1fr;
+    padding-right: 44px;
+  }
+
+  .iconButton {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+  }
+
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .primaryButton,
+  .secondaryButton,
+  .tertiaryButton {
+    width: 100%;
+  }
+
+  .regexInputWrap {
+    flex-direction: column;
+  }
+
+  .copyButton {
+    width: 100%;
+  }
+}

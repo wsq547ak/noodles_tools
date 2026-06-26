@@ -52,7 +52,7 @@ export function ImageCompressorPage() {
     startTransition(() => {
       void compressImages(files)
         .then((nextResults) => {
-          setResults((currentResults) => [...nextResults, ...currentResults]);
+          setResults((currentResults) => [...currentResults, ...nextResults]);
           setStatus("idle");
         })
         .catch((nextError: unknown) => {
@@ -102,14 +102,6 @@ export function ImageCompressorPage() {
 
   return (
     <main className={styles.page}>
-      <section className={styles.hero}>
-        <p className={styles.eyebrow}>可复用压缩模块</p>
-        <h1 className={styles.title}>无损图片压缩</h1>
-        {/* <p className={styles.subtitle}>
-          前端模块可迁移，Python 压缩服务可独立部署，并且每张压缩后的图片都会保持原始宽高。
-        </p> */}
-      </section>
-
       <section className={styles.panel}>
         <label className={styles.dropzone}>
           <input
@@ -124,16 +116,6 @@ export function ImageCompressorPage() {
             支持批量上传。压缩后保持原始像素尺寸不变。
           </span>
         </label>
-
-        <div className={styles.statusRow}>
-          <div>
-            <strong>状态：</strong>{" "}
-            {status === "uploading" || isPending ? "压缩中..." : "就绪"}
-          </div>
-          <div>
-            <strong>支持格式：</strong> PNG、JPEG
-          </div>
-        </div>
 
         {error ? <p className={styles.error}>{error}</p> : null}
       </section>
@@ -172,11 +154,7 @@ export function ImageCompressorPage() {
         </div>
 
         <div className={styles.resultsList}>
-          {results.length === 0 ? (
-            <p className={styles.emptyState}>
-              上传图片后，这里会显示压缩结果、图片尺寸和每张图片节省的体积。
-            </p>
-          ) : (
+          {results.length === 0 ? null : (
             results.map((result) => (
               <article className={styles.resultCard} key={result.id}>
                 <img
