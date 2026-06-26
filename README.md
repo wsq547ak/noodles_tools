@@ -29,26 +29,39 @@ npm run start:web    # 生产模式启动 Next.js
 
 ### 用 PM2 启动
 
-先构建：
+确保已安装 PM2 和 Python 依赖：
+
+```bash
+npm install -g pm2
+pip3 install -r services/picZip/requirements.txt
+```
+
+先构建前端：
 
 ```bash
 npm run build:web
 ```
 
-再用 PM2 启动 standalone 服务：
+再用 PM2 同时启动前端和后端：
 
 ```bash
 pm2 start ecosystem.config.js
 ```
+
+`ecosystem.config.js` 里配置了两个进程：
+
+- `tools`：Next.js standalone 前端，端口 `4001`
+- `piczip`：Python 图片压缩服务，端口 `5001`
 
 常用管理：
 
 ```bash
 pm2 status
 pm2 logs tools
-pm2 restart tools
-pm2 stop tools
-pm2 delete tools
+pm2 logs piczip
+pm2 restart ecosystem.config.js
+pm2 stop ecosystem.config.js
+pm2 delete ecosystem.config.js
 ```
 
 > 不要直接用 `pm2 start npm -- prod:web`：pm2 会把 `prod:web` 当成 npm 子命令执行（实际不存在），而且 `prod:web` 会先 build 再退出，pm2 会误判为崩溃并反复重启。

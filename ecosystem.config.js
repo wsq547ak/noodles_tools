@@ -12,5 +12,18 @@ module.exports = {
       watch: false,
       max_memory_restart: "1G",
     },
+    {
+      name: "piczip",
+      script: "python3",
+      args: "-m services.picZip.server",
+      env: {
+        PICZIP_HOST: "127.0.0.1",
+        PICZIP_PORT: 5001,
+      },
+      instances: 1,
+      autorestart: true,
+      watch: false,
+      max_memory_restart: "500M",
+    },
   ],
 };
