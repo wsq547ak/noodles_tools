@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev --port 4001",
     "build": "next build",
+    "postbuild": "cp -r .next/static .next/standalone/apps/web/.next/",
     "start": "next start --port 4001",
     "lint": "eslint ."
   },

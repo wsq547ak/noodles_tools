@@ -27,6 +27,32 @@ npm run start:web    # 生产模式启动 Next.js
 
 构建后会生成 standalone 输出（`apps/web/.next/standalone/apps/web/server.js`），也可以直接用于容器化部署。
 
+### 用 PM2 启动
+
+先构建：
+
+```bash
+npm run build:web
+```
+
+再用 PM2 启动 standalone 服务：
+
+```bash
+pm2 start ecosystem.config.js
+```
+
+常用管理：
+
+```bash
+pm2 status
+pm2 logs tools
+pm2 restart tools
+pm2 stop tools
+pm2 delete tools
+```
+
+> 不要直接用 `pm2 start npm -- prod:web`：pm2 会把 `prod:web` 当成 npm 子命令执行（实际不存在），而且 `prod:web` 会先 build 再退出，pm2 会误判为崩溃并反复重启。
+
 ## Structure
 
 - `apps/web`: Next.js shell for all tools
