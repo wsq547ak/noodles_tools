@@ -13,6 +13,17 @@ type ServiceCompressionResponse = {
 const DEFAULT_PROFILE = "aggressive";
 const DEFAULT_PNG_MODE = "strict";
 
+function createResultId() {
+  if (
+    typeof globalThis.crypto !== "undefined" &&
+    typeof globalThis.crypto.randomUUID === "function"
+  ) {
+    return globalThis.crypto.randomUUID();
+  }
+
+  return `compress-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
 export async function compressImages(files: File[]): Promise<CompressionResult[]> {
   const results: CompressionResult[] = [];
 
@@ -37,7 +48,7 @@ export async function compressImages(files: File[]): Promise<CompressionResult[]
     const payload = (await response.json()) as ServiceCompressionResponse;
 
     results.push({
-      id: crypto.randomUUID(),
+      id: createResultId(),
       originalName: file.name,
       mimeType: file.type,
       width: payload.width,
