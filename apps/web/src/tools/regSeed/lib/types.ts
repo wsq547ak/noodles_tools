@@ -3,6 +3,10 @@ export type RegexSeedExample = {
   result: string;
 };
 
+export type RegexSeedInferRequest = {
+  examples: RegexSeedExample[];
+};
+
 export type RegexSeedInference = {
   explanation: string;
   flags: string;
@@ -11,4 +15,16 @@ export type RegexSeedInference = {
 
 export type RegexSeedInferenceResponse = {
   inference: RegexSeedInference;
+};
+
+export type RegexSeedAiInferRequest = RegexSeedInferRequest & {
+  model?: string;
+};
+
+export type RegexSeedAiInferenceResponse = {
+  inference: RegexSeedInference;
+  meta: {
+    model: string;
+    provider: "deepseek";
+  };
 };

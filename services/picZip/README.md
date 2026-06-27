@@ -20,6 +20,20 @@ Profiles:
     - `x-png-compression-mode: strict` or `visual`
   - Body:
     - Raw image bytes
+- `POST /tools/regInfer/ai`
+  - Body:
+
+```json
+{
+  "examples": [
+    { "sample": "www.188.com/fff/123.html?a=1&c=t", "result": "a=1&c=t" },
+    { "sample": "https://188.com/fff/123", "result": "" }
+  ],
+  "model": "deepseek-v4-flash"
+}
+```
+
+当前接口已预留，等待接入模型实现。
 
 ## Run
 
@@ -31,4 +45,13 @@ Default host/port:
 
 ```bash
 python3 -m services.picZip.server
+```
+
+服务启动时会自动读取同目录下的 `.env`：
+
+```env
+DEEPSEEK_API_KEY=your_deepseek_api_key_here
+DEEPSEEK_BASE_URL=https://api.deepseek.com
+PICZIP_HOST=127.0.0.1
+PICZIP_PORT=5001
 ```

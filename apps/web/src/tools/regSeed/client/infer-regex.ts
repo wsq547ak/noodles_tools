@@ -6,7 +6,7 @@ import {
 const API_BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 export async function inferRegex(examples: RegexSeedExample[]) {
-  const response = await fetch(`${API_BASE}/api/regSeed/infer`, {
+  const response = await fetch(`${API_BASE}/api/regInfer`, {
     body: JSON.stringify({ examples }),
     headers: {
       "content-type": "application/json",
