@@ -111,7 +111,13 @@ class CompressionRequestHandler(BaseHTTPRequestHandler):
         try:
             result = infer_regex_with_ai(examples, model=model)
         except ValueError as error:
-            self._write_json(HTTPStatus.BAD_REQUEST, {"error": str(error)})
+            self._write_json(
+                HTTPStatus.BAD_REQUEST,
+                {
+                    "error": "样本边界不够明确，或推导结果不稳定。请补充 1 到 2 条更有区分度的样本后再试。",
+                    "detail": str(error),
+                },
+            )
             return
         except NotImplementedError as error:
             self._write_json(HTTPStatus.NOT_IMPLEMENTED, {"error": str(error)})
