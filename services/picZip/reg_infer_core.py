@@ -167,7 +167,7 @@ def _validate_inference(
     inference: dict[str, str],
     examples: list[RegexSeedExample],
 ) -> None:
-    pattern = inference["pattern"]
+    pattern = _to_python_regex_pattern(inference["pattern"])
     flags = _parse_python_flags(inference["flags"])
 
     try:
@@ -207,3 +207,7 @@ def _parse_python_flags(flag_text: str) -> int:
         parsed |= mapping[flag]
 
     return parsed
+
+
+def _to_python_regex_pattern(pattern: str) -> str:
+    return re.sub(r"\(\?<([a-zA-Z_][a-zA-Z0-9_]*)>", r"(?P<\1>", pattern)
