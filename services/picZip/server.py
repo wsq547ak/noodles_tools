@@ -18,12 +18,14 @@ from services.picZip.reg_infer_core import (
     infer_regex_with_ai,
     normalize_examples,
 )
+from services.randomStu.recognition import MAX_IMAGE_SIZE, recognize_students
 
 ENV_FILE = Path(__file__).with_name(".env")
+RANDOM_STU_ENV_FILE = Path(__file__).parents[1] / "randomStu" / ".env"
 
 
 class CompressionRequestHandler(BaseHTTPRequestHandler):
-    server_version = "TinyCompressor/0.1"
+    server_version = "TinyToolsBackend/0.1"
 
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
@@ -35,7 +37,8 @@ class CompressionRequestHandler(BaseHTTPRequestHandler):
             HTTPStatus.OK,
             {
                 "status": "ok",
-                "service": "picZip",
+                "service": "toolsBackend",
+                "modules": ["picZip", "regInfer", "randomStu"],
                 "regInferModel": DEFAULT_DEEPSEEK_MODEL,
             },
         )
@@ -48,6 +51,10 @@ class CompressionRequestHandler(BaseHTTPRequestHandler):
 
         if parsed.path == "/tools/regInfer/ai":
             self._handle_reg_infer_ai()
+            return
+
+        if parsed.path == "/tools/randomStu/recognize":
+            self._handle_random_stu_recognize()
             return
 
         self._write_json(HTTPStatus.NOT_FOUND, {"error": "Not found"})
@@ -128,6 +135,28 @@ class CompressionRequestHandler(BaseHTTPRequestHandler):
 
         self._write_json(HTTPStatus.OK, result)
 
+    def _handle_random_stu_recognize(self) -> None:
+        content_length = int(self.headers.get("content-length", "0"))
+        if content_length > MAX_IMAGE_SIZE:
+            self._write_json(
+                HTTPStatus.REQUEST_ENTITY_TOO_LARGE,
+                {"error": "图片不能超过 12 MB。"},
+            )
+            return
+
+        mime_type = self.headers.get("content-type", "").split(";", 1)[0].strip()
+        image_data = self.rfile.read(content_length)
+        try:
+            result = recognize_students(image_data, mime_type)
+        except ValueError as error:
+            self._write_json(HTTPStatus.BAD_REQUEST, {"error": str(error)})
+            return
+        except Exception as error:
+            self._write_json(HTTPStatus.BAD_GATEWAY, {"error": str(error)})
+            return
+
+        self._write_json(HTTPStatus.OK, result)
+
     def log_message(self, format: str, *args: object) -> None:
         return
 
@@ -142,21 +171,21 @@ class CompressionRequestHandler(BaseHTTPRequestHandler):
 
 def run(host: str = "127.0.0.1", port: int = 5001) -> None:
     server = ThreadingHTTPServer((host, port), CompressionRequestHandler)
-    print(f"Compression service listening on http://{host}:{port}")
+    print(f"Tools backend listening on http://{host}:{port}")
     server.serve_forever()
 
 
 def load_local_env() -> None:
-    if not ENV_FILE.exists():
-        return
-
-    for raw_line in ENV_FILE.read_text(encoding="utf-8").splitlines():
-        line = raw_line.strip()
-        if not line or line.startswith("#") or "=" not in line:
+    for env_file in (ENV_FILE, RANDOM_STU_ENV_FILE):
+        if not env_file.exists():
             continue
-
-        key, value = line.split("=", 1)
-        os.environ.setdefault(key.strip(), value.strip())
+        for raw_line in env_file.read_text(encoding="utf-8").splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            if value.strip():
+                os.environ.setdefault(key.strip(), value.strip())
 
 
 if __name__ == "__main__":

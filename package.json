@@ -6,8 +6,8 @@
   ],
   "scripts": {
     "dev:web": "npm --workspace @tiny/web run dev",
+    "dev:backend": "python3 -m services.picZip.server",
     "dev:picZip": "python3 -m services.picZip.server",
-    "dev:randomStu": "python3 -m services.randomStu.server",
     "dev": "npm run dev:web",
     "build:web": "npm --workspace @tiny/web run build",
     "start:web": "PORT=4001 node apps/web/.next/standalone/apps/web/server.js",

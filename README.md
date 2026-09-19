@@ -7,8 +7,7 @@ Small-tool workspace for reusable Next.js + Python utilities.
 ```bash
 npm install
 npm run dev          # 启动 Next.js，访问 http://localhost:4001
-npm run dev:picZip   # 单独启动图片压缩服务（127.0.0.1:5001）
-npm run dev:randomStu # 单独启动名单识别服务（127.0.0.1:5002）
+npm run dev:backend  # 启动共享 Python 后端（127.0.0.1:5001）
 ```
 
 > `next.config.ts` 在生产构建时保留了 `basePath: "/tools"`，所以部署后需通过 `/tools` 访问；本地 `npm run dev` 使用空 basePath，直接打开根路径即可。
@@ -36,7 +35,6 @@ npm run start:web    # 生产模式启动 Next.js
 npm ci
 npm install -g pm2
 pip3 install -r services/picZip/requirements.txt
-pip3 install -r services/randomStu/requirements.txt
 ```
 
 按 `.env.example` 创建服务配置，API Key 只能放在 `.env`，不要写入示例文件：
@@ -44,8 +42,7 @@ pip3 install -r services/randomStu/requirements.txt
 ```bash
 cp apps/web/.env.example apps/web/.env.local
 cp services/picZip/.env.example services/picZip/.env
-cp services/randomStu/.env.example services/randomStu/.env
-chmod 600 services/picZip/.env services/randomStu/.env
+chmod 600 services/picZip/.env
 ```
 
 构建并启动全部进程：
@@ -57,11 +54,10 @@ pm2 save
 pm2 startup
 ```
 
-`ecosystem.config.js` 配置了三个仅供 Nginx 内部访问的进程：
+`ecosystem.config.js` 配置了两个仅供 Nginx 内部访问的进程：
 
 - `tools`：Next.js standalone 前端，端口 `4001`
-- `piczip_server`：Python 图片压缩服务，端口 `5001`
-- `random_stu_server`：Python 名单识别服务，端口 `5002`
+- `tools_server`：共享 Python 后端，端口 `5001`，同时提供图片压缩、正则推导和学生名单识别
 
 安装 Nginx 配置前，将 `deploy/nginx.conf` 中的 `server_name` 改成实际域名：
 
@@ -83,8 +79,7 @@ sudo certbot --nginx -d 你的域名
 ```bash
 pm2 status
 pm2 logs tools
-pm2 logs piczip_server
-pm2 logs random_stu_server
+pm2 logs tools_server
 pm2 restart ecosystem.config.js
 pm2 stop ecosystem.config.js
 pm2 delete ecosystem.config.js
@@ -97,9 +92,9 @@ pm2 delete ecosystem.config.js
 - `apps/web`: Next.js shell for all tools
 - `apps/web/src/tools/picZip`: `picZip` frontend module
 - `apps/web/src/app/api/picZip/compress/route.ts`: `picZip` API adapter
-- `services/picZip`: `picZip` Python service
+- `services/picZip/server.py`: shared Python HTTP server on port `5001`
 - `apps/web/src/tools/randomStu`: `randomStu` frontend module
-- `services/randomStu`: `randomStu` Python service
+- `services/randomStu`: isolated `randomStu` recognition module
 
 ## Goals
 

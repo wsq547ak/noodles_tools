@@ -1,7 +1,7 @@
-# Python Compression Service
+# Shared Python Backend
 
-This service accepts raw PNG or JPEG bytes over HTTP and returns compressed bytes
-as base64 while preserving the original image dimensions.
+This server exposes the isolated picZip, regInfer, and randomStu backend modules
+through one process on port 5001.
 
 Profiles:
 
@@ -33,7 +33,10 @@ Profiles:
 }
 ```
 
-当前接口已预留，等待接入模型实现。
+- `POST /tools/randomStu/recognize`
+  - Headers: `content-type: image/png`, `image/jpeg`, `image/webp`, or `image/gif`
+  - Body: raw image bytes
+  - Uses DeepSeek Files API and returns a validated `students` array
 
 ## Run
 

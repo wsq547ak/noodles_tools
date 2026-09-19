@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const SERVICE_URL =
-  process.env.RANDOMSTU_SERVICE_URL ?? "http://127.0.0.1:5002";
+  process.env.RANDOMSTU_SERVICE_URL ??
+  process.env.COMPRESSION_SERVICE_URL ??
+  "http://127.0.0.1:5001";
 const MAX_IMAGE_SIZE = 12 * 1024 * 1024;
 const SUPPORTED_TYPES = new Set([
   "image/gif",
