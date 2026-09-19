@@ -35,9 +35,15 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    const cookie = request.headers.get("cookie");
+    const forwardedFor = request.headers.get("x-forwarded-for");
     const response = await fetch(`${SERVICE_URL}/tools/randomStu/recognize`, {
       method: "POST",
-      headers: { "content-type": contentType },
+      headers: {
+        "content-type": contentType,
+        ...(cookie ? { cookie } : {}),
+        ...(forwardedFor ? { "x-forwarded-for": forwardedFor } : {}),
+      },
       body: image,
       signal: AbortSignal.timeout(130_000),
     });

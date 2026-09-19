@@ -22,6 +22,7 @@ module.exports = {
       env: {
         PICZIP_HOST: "127.0.0.1",
         PICZIP_PORT: 5001,
+        RANDOMSTU_COOKIE_SECURE: "true",
       },
       instances: 1,
       autorestart: true,

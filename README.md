@@ -45,6 +45,19 @@ cp services/picZip/.env.example services/picZip/.env
 chmod 600 services/picZip/.env
 ```
 
+配置 RandomStu 管理密码。命令会交互式读取密码并只把哈希写入 `.env`：
+
+```bash
+python3 -m services.randomStu.auth configure-password services/picZip/.env
+```
+
+RandomStu 数据默认保存在 `./data/randomStu.sqlite3`。该目录已被 Git 忽略，更新代码和重新构建不会删除数据。建议定期备份：
+
+```bash
+mkdir -p backups
+sqlite3 data/randomStu.sqlite3 ".backup 'backups/randomStu-$(date +%F).sqlite3'"
+```
+
 构建并启动全部进程：
 
 ```bash
@@ -58,6 +71,8 @@ pm2 startup
 
 - `tools`：Next.js standalone 前端，端口 `4001`
 - `tools_server`：共享 Python 后端，端口 `5001`，同时提供图片压缩、正则推导和学生名单识别
+
+RandomStu 页面使用后台密码登录。会话通过 HttpOnly Cookie 保存并在 `Asia/Shanghai` 当天午夜失效，每天需要重新登录；班级数据写入 SQLite，首次登录且远端为空时会自动迁移当前浏览器中的旧名单。
 
 安装 Nginx 配置前，将 `deploy/nginx.conf` 中的 `server_name` 改成实际域名：
 

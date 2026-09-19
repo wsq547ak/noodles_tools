@@ -37,6 +37,14 @@ Profiles:
   - Headers: `content-type: image/png`, `image/jpeg`, `image/webp`, or `image/gif`
   - Body: raw image bytes
   - Uses DeepSeek Files API and returns a validated `students` array
+- `POST /tools/randomStu/login`
+- `POST /tools/randomStu/logout`
+- `GET /tools/randomStu/session`
+- `GET /tools/randomStu/data`
+- `PUT /tools/randomStu/data`
+
+RandomStu data and login sessions are stored in SQLite. All RandomStu endpoints
+except login and session status require a valid HttpOnly session cookie.
 
 ## Run
 
@@ -57,4 +65,7 @@ DEEPSEEK_API_KEY=your_deepseek_api_key_here
 DEEPSEEK_BASE_URL=https://api.deepseek.com
 PICZIP_HOST=127.0.0.1
 PICZIP_PORT=5001
+RANDOMSTU_PASSWORD_HASH=pbkdf2_sha256$...
+RANDOMSTU_DB_PATH=./data/randomStu.sqlite3
+RANDOMSTU_TIMEZONE=Asia/Shanghai
 ```

@@ -12,6 +12,9 @@ dist/
 .env.local
 .env.*.local
 
+# Runtime databases
+/data/
+
 # Python
 __pycache__/
 *.py[cod]

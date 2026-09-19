@@ -1,9 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import styles from "./random-stu-page.module.css";
 import { recognizeRosterImage } from "../client/recognize-roster";
+import {
+  checkRandomStuSession,
+  loadRemoteRandomStuData,
+  loginRandomStu,
+  logoutRandomStu,
+  RemoteApiError,
+  saveRemoteRandomStuData,
+} from "../client/remote-data";
 import {
   EMPTY_RANDOM_STU_DATA,
   loadRandomStuData,
@@ -12,6 +20,8 @@ import {
 import type { Classroom, RandomStuData, Student } from "../lib/types";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+type AuthStatus = "checking" | "required" | "authenticated";
+type SyncStatus = "idle" | "syncing" | "synced" | "error";
 
 function createId(): string {
   return globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`;
@@ -35,25 +45,48 @@ export function RandomStuPage() {
   const [draftStudents, setDraftStudents] = useState<Student[]>([]);
   const [className, setClassName] = useState("");
   const [hydrated, setHydrated] = useState(false);
+  const [authStatus, setAuthStatus] = useState<AuthStatus>("checking");
+  const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>("idle");
   const [notice, setNotice] = useState("");
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [isRecognizing, setIsRecognizing] = useState(false);
   const drawTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const uploadInputRef = useRef<HTMLInputElement | null>(null);
+  const revisionRef = useRef(0);
+  const syncQueueRef = useRef<Promise<void>>(Promise.resolve());
 
   const activeClassroom = data.classrooms.find(
     (classroom) => classroom.id === data.activeClassroomId,
   );
 
   useEffect(() => {
-    const saved = loadRandomStuData();
-    setData(saved);
-    const active = saved.classrooms.find(
-      (classroom) => classroom.id === saved.activeClassroomId,
-    );
-    setDraftStudents(active?.students ?? []);
-    setHydrated(true);
+    let cancelled = false;
+    async function bootstrap() {
+      try {
+        const authenticated = await checkRandomStuSession();
+        if (cancelled) return;
+        if (!authenticated) {
+          setAuthStatus("required");
+          setHydrated(true);
+          return;
+        }
+        await loadAuthenticatedData();
+        if (!cancelled) setAuthStatus("authenticated");
+      } catch (error) {
+        if (cancelled) return;
+        setLoginError(error instanceof Error ? error.message : "无法连接后台数据服务。");
+        setAuthStatus("required");
+        setHydrated(true);
+      }
+    }
+    void bootstrap();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -62,9 +95,84 @@ export function RandomStuPage() {
     };
   }, []);
 
+  async function loadAuthenticatedData() {
+    const remote = await loadRemoteRandomStuData();
+    revisionRef.current = remote.revision;
+    let next = remote.data;
+
+    if (!next) {
+      const cached = loadRandomStuData();
+      next = cached;
+      if (cached.classrooms.length > 0) {
+        const migrated = await saveRemoteRandomStuData(cached, remote.revision);
+        revisionRef.current = migrated.revision;
+        setSyncStatus("synced");
+      }
+    }
+
+    setData(next);
+    saveRandomStuData(next);
+    const active = next.classrooms.find(
+      (classroom) => classroom.id === next.activeClassroomId,
+    );
+    setDraftStudents(active?.students ?? []);
+    setSyncStatus("synced");
+    setHydrated(true);
+  }
+
   function persist(next: RandomStuData) {
     setData(next);
     saveRandomStuData(next);
+    if (authStatus !== "authenticated") return;
+
+    setSyncStatus("syncing");
+    syncQueueRef.current = syncQueueRef.current
+      .catch(() => undefined)
+      .then(async () => {
+        const saved = await saveRemoteRandomStuData(next, revisionRef.current);
+        revisionRef.current = saved.revision;
+        setSyncStatus("synced");
+      })
+      .catch((error: unknown) => {
+        setSyncStatus("error");
+        if (error instanceof RemoteApiError && error.status === 401) {
+          setAuthStatus("required");
+          setLoginError("登录已失效，请重新输入密码。");
+          return;
+        }
+        setNotice(error instanceof Error ? error.message : "远端同步失败，请稍后重试。");
+      });
+  }
+
+  async function handleLogin(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!password || isLoggingIn) return;
+    setIsLoggingIn(true);
+    setLoginError("");
+    try {
+      await loginRandomStu(password);
+      await loadAuthenticatedData();
+      setPassword("");
+      setAuthStatus("authenticated");
+    } catch (error) {
+      setLoginError(error instanceof Error ? error.message : "登录失败，请稍后重试。");
+    } finally {
+      setIsLoggingIn(false);
+    }
+  }
+
+  async function handleLogout() {
+    try {
+      await logoutRandomStu();
+    } finally {
+      cancelDrawing();
+      setData(EMPTY_RANDOM_STU_DATA);
+      setDraftStudents([]);
+      setSelectedStudent(null);
+      setAuthStatus("required");
+      setSyncStatus("idle");
+      revisionRef.current = 0;
+    }
   }
 
   function cancelDrawing() {
@@ -152,7 +260,7 @@ export function RandomStuPage() {
     };
     persist(next);
     setDraftStudents(students);
-    setNotice(`已保存 ${students.length} 名学生，本地数据不会自动过期`);
+    setNotice(`已保存 ${students.length} 名学生，正在同步到远端`);
   }
 
   function clearRoster() {
@@ -284,17 +392,38 @@ export function RandomStuPage() {
     }, 1000);
   }
 
-  if (!hydrated) return <main className={styles.loading}>正在读取本地名单...</main>;
+  const isLockedOut = authStatus !== "authenticated";
+  const syncLabel =
+    syncStatus === "syncing"
+      ? "正在同步"
+      : syncStatus === "error"
+        ? "同步失败"
+        : syncStatus === "synced"
+          ? "云端已同步"
+          : "云端存储";
 
   return (
-    <main className={styles.page}>
+    <div className={styles.shell}>
+    <main
+      aria-hidden={isLockedOut}
+      className={`${styles.page} ${isLockedOut ? styles.blurredPage : ""}`}
+    >
       <header className={styles.header}>
         <div>
           <p className={styles.eyebrow}>课堂小工具 · RANDOM STU</p>
           <h1>随机点名</h1>
           <p className={styles.subtitle}>把机会交给随机，也把注意力留在课堂。</p>
         </div>
-        <div className={styles.storageBadge}>仅保存在当前浏览器</div>
+        <div className={styles.headerActions}>
+          <div className={`${styles.storageBadge} ${syncStatus === "error" ? styles.syncError : ""}`}>
+            {syncLabel}
+          </div>
+          {authStatus === "authenticated" && (
+            <button className={styles.logoutButton} onClick={() => void handleLogout()} type="button">
+              退出
+            </button>
+          )}
+        </div>
       </header>
 
       {data.classrooms.length > 0 && (
@@ -320,7 +449,7 @@ export function RandomStuPage() {
         <section className={styles.emptyCard}>
           <div className={styles.emptyMark}>01</div>
           <h2>先创建一个班级</h2>
-          <p>班级和保存后的名单会一直留在本机浏览器中，除非你主动清除浏览器数据。</p>
+          <p>班级和保存后的名单会同步到远端，换一台电脑登录后仍然可以继续使用。</p>
           <div className={styles.createRow}>
             <input
               aria-label="班级名称"
@@ -374,7 +503,7 @@ export function RandomStuPage() {
             <div className={styles.rosterHeader}>
               <div>
                 <span>名单管理</span>
-                <h2>确认后保存到本机</h2>
+                <h2>确认后保存并同步</h2>
               </div>
               <div className={styles.rosterActions}>
                 <button
@@ -453,7 +582,7 @@ export function RandomStuPage() {
 
             <button className={styles.addStudentButton} disabled={activeClassroom.locked} onClick={addStudent} type="button">+ 添加学生</button>
             <div className={styles.saveBar}>
-              <p>{notice || (activeClassroom.locked ? "名单已锁定，解锁后才可以修改。" : "修改不会自动保存，请确认名单后点击保存。")}</p>
+              <p>{notice || (activeClassroom.locked ? "名单已锁定，解锁后才可以修改。" : "修改不会自动保存，请确认名单后点击保存并同步。")}</p>
               <button disabled={activeClassroom.locked} onClick={saveRoster} type="button">保存名单</button>
             </div>
           </section>
@@ -461,5 +590,40 @@ export function RandomStuPage() {
       )}
       {!activeClassroom && notice && <p className={styles.notice}>{notice}</p>}
     </main>
+      {isLockedOut && (
+        <div className={styles.loginBackdrop} role="presentation">
+          <form className={styles.loginDialog} onSubmit={handleLogin}>
+            <div aria-hidden="true" className={styles.loginMark}>张</div>
+            <p className={styles.loginEyebrow}>RANDOM STU · 私人工作区</p>
+            <h2>请张老师输入密码！</h2>
+            <p className={styles.loginHint}>
+              {authStatus === "checking" && !hydrated
+                ? "正在检查登录状态..."
+                : "登录后会从远端读取全部班级和学生名单。"}
+            </p>
+            <label className={styles.passwordField}>
+              <span>访问密码</span>
+              <input
+                autoComplete="current-password"
+                autoFocus
+                disabled={authStatus === "checking" || isLoggingIn}
+                onChange={(event) => setPassword(event.target.value)}
+                placeholder="请输入密码"
+                type="password"
+                value={password}
+              />
+            </label>
+            {loginError && <p className={styles.loginError}>{loginError}</p>}
+            <button
+              className={styles.loginButton}
+              disabled={authStatus === "checking" || isLoggingIn || !password}
+              type="submit"
+            >
+              {isLoggingIn ? "正在登录并同步..." : "进入随机点名"}
+            </button>
+          </form>
+        </div>
+      )}
+    </div>
   );
 }
