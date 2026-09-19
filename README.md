@@ -35,10 +35,8 @@ npm run start:web    # 生产模式启动 Next.js
 ```bash
 npm ci
 npm install -g pm2
-python3 -m venv .venv
-.venv/bin/pip install --upgrade pip
-.venv/bin/pip install -r services/picZip/requirements.txt
-.venv/bin/pip install -r services/randomStu/requirements.txt
+pip3 install -r services/picZip/requirements.txt
+pip3 install -r services/randomStu/requirements.txt
 ```
 
 按 `.env.example` 创建服务配置，API Key 只能放在 `.env`，不要写入示例文件：

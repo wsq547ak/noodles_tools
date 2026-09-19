@@ -17,7 +17,7 @@ module.exports = {
     {
       name: "piczip_server",
       cwd: __dirname,
-      script: "./.venv/bin/python",
+      script: "python3",
       args: "-m services.picZip.server",
       env: {
         PICZIP_HOST: "127.0.0.1",
@@ -31,7 +31,7 @@ module.exports = {
     {
       name: "random_stu_server",
       cwd: __dirname,
-      script: "./.venv/bin/python",
+      script: "python3",
       args: "-m services.randomStu.server",
       env: {
         RANDOMSTU_HOST: "127.0.0.1",
