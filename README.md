@@ -7,7 +7,8 @@ Small-tool workspace for reusable Next.js + Python utilities.
 ```bash
 npm install
 npm run dev          # 启动 Next.js，访问 http://localhost:4001
-npm run dev:picZip   # 同时启动 Python 压缩服务（默认 127.0.0.1:5001）
+npm run dev:picZip   # 单独启动图片压缩服务（127.0.0.1:5001）
+npm run dev:randomStu # 单独启动名单识别服务（127.0.0.1:5002）
 ```
 
 > `next.config.ts` 在生产构建时保留了 `basePath: "/tools"`，所以部署后需通过 `/tools` 访问；本地 `npm run dev` 使用空 basePath，直接打开根路径即可。
@@ -27,38 +28,65 @@ npm run start:web    # 生产模式启动 Next.js
 
 构建后会生成 standalone 输出（`apps/web/.next/standalone/apps/web/server.js`），也可以直接用于容器化部署。
 
-### 用 PM2 启动
+### Linux + PM2 + Nginx 部署
 
-确保已安装 PM2 和 Python 依赖：
+推荐 Node.js 20+、Python 3.11+。在项目根目录安装依赖：
 
 ```bash
+npm ci
 npm install -g pm2
-pip3 install -r services/picZip/requirements.txt
+python3 -m venv .venv
+.venv/bin/pip install --upgrade pip
+.venv/bin/pip install -r services/picZip/requirements.txt
+.venv/bin/pip install -r services/randomStu/requirements.txt
 ```
 
-先构建前端：
+按 `.env.example` 创建服务配置，API Key 只能放在 `.env`，不要写入示例文件：
+
+```bash
+cp apps/web/.env.example apps/web/.env.local
+cp services/picZip/.env.example services/picZip/.env
+cp services/randomStu/.env.example services/randomStu/.env
+chmod 600 services/picZip/.env services/randomStu/.env
+```
+
+构建并启动全部进程：
 
 ```bash
 npm run build:web
-```
-
-再用 PM2 同时启动前端和后端：
-
-```bash
 pm2 start ecosystem.config.js
+pm2 save
+pm2 startup
 ```
 
-`ecosystem.config.js` 里配置了两个进程：
+`ecosystem.config.js` 配置了三个仅供 Nginx 内部访问的进程：
 
 - `tools`：Next.js standalone 前端，端口 `4001`
-- `piczip`：Python 图片压缩服务，端口 `5001`
+- `piczip_server`：Python 图片压缩服务，端口 `5001`
+- `random_stu_server`：Python 名单识别服务，端口 `5002`
+
+安装 Nginx 配置前，将 `deploy/nginx.conf` 中的 `server_name` 改成实际域名：
+
+```bash
+sudo cp deploy/nginx.conf /etc/nginx/sites-available/tiny-toolbox
+sudo ln -s /etc/nginx/sites-available/tiny-toolbox /etc/nginx/sites-enabled/tiny-toolbox
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+上线地址为 `https://你的域名/tools/randomstu` 和 `https://你的域名/tools/piczip`。HTTPS 可使用 Certbot 配置：
+
+```bash
+sudo certbot --nginx -d 你的域名
+```
 
 常用管理：
 
 ```bash
 pm2 status
 pm2 logs tools
-pm2 logs piczip
+pm2 logs piczip_server
+pm2 logs random_stu_server
 pm2 restart ecosystem.config.js
 pm2 stop ecosystem.config.js
 pm2 delete ecosystem.config.js
@@ -72,6 +100,8 @@ pm2 delete ecosystem.config.js
 - `apps/web/src/tools/picZip`: `picZip` frontend module
 - `apps/web/src/app/api/picZip/compress/route.ts`: `picZip` API adapter
 - `services/picZip`: `picZip` Python service
+- `apps/web/src/tools/randomStu`: `randomStu` frontend module
+- `services/randomStu`: `randomStu` Python service
 
 ## Goals
 

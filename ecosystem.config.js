@@ -2,8 +2,10 @@ module.exports = {
   apps: [
     {
       name: "tools",
+      cwd: __dirname,
       script: "./apps/web/.next/standalone/apps/web/server.js",
       env: {
+        HOSTNAME: "127.0.0.1",
         NODE_ENV: "production",
         PORT: 4001,
       },
@@ -13,8 +15,9 @@ module.exports = {
       max_memory_restart: "1G",
     },
     {
-      name: "tools_server",
-      script: "python3",
+      name: "piczip_server",
+      cwd: __dirname,
+      script: "./.venv/bin/python",
       args: "-m services.picZip.server",
       env: {
         PICZIP_HOST: "127.0.0.1",
@@ -27,7 +30,8 @@ module.exports = {
     },
     {
       name: "random_stu_server",
-      script: "python3",
+      cwd: __dirname,
+      script: "./.venv/bin/python",
       args: "-m services.randomStu.server",
       env: {
         RANDOMSTU_HOST: "127.0.0.1",
