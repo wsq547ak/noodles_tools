@@ -15,5 +15,8 @@
     "lint:web": "npm --workspace @tiny/web run lint",
     "test:picZip": "python3 -m unittest discover -s services/picZip/tests -v",
     "test:randomStu": "python3 -m unittest discover -s services/randomStu/tests -v"
+  },
+  "devDependencies": {
+    "next": "^15.0.0"
   }
 }
