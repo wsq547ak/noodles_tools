@@ -1,0 +1,107 @@
+.page {
+  min-height: 100vh;
+  padding: 54px clamp(20px, 6vw, 92px) 72px;
+  background:
+    radial-gradient(circle at 12% 6%, rgba(255, 161, 94, 0.2), transparent 28%),
+    radial-gradient(circle at 90% 42%, rgba(126, 196, 210, 0.2), transparent 25%),
+    #f7f3ec;
+  color: #102441;
+}
+
+.loading { min-height: 100vh; display: grid; place-items: center; color: #607086; }
+.header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; max-width: 1320px; margin: 0 auto 28px; }
+.header h1 { margin: 5px 0 4px; font-size: clamp(42px, 6vw, 72px); letter-spacing: -0.06em; }
+.eyebrow { margin: 0; color: #ed6c3c; font-size: 12px; font-weight: 800; letter-spacing: 0.18em; }
+.subtitle { margin: 0; color: #657287; font-size: 17px; }
+.storageBadge { padding: 12px 17px; border: 1px solid rgba(16, 36, 65, 0.12); border-radius: 999px; background: rgba(255,255,255,.72); color: #526177; font-size: 13px; }
+.classTabs { max-width: 1320px; margin: 0 auto 20px; display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; }
+.tab, .activeTab, .addClassTab { white-space: nowrap; border: 0; border-radius: 16px; padding: 13px 18px; cursor: pointer; }
+.tab { background: rgba(255,255,255,.76); color: #243a56; }
+.activeTab { background: #102f55; color: white; box-shadow: 0 10px 25px rgba(16,47,85,.18); }
+.tab span, .activeTab span { margin-left: 9px; opacity: .65; font-size: 12px; }
+.addClassTab { border: 1px dashed rgba(16,36,65,.25); background: transparent; color: #536177; }
+.addClassTab:hover, .addClassTab:focus-visible { border-color: #2563eb; color: #1d4ed8; outline: none; }
+.emptyCard { max-width: 760px; margin: 80px auto 0; padding: clamp(32px, 7vw, 76px); border: 1px solid rgba(16,36,65,.08); border-radius: 34px; background: rgba(255,255,255,.88); box-shadow: 0 28px 70px rgba(44,54,67,.08); text-align: center; }
+.emptyMark { display: grid; place-items: center; width: 56px; height: 56px; margin: 0 auto 20px; border-radius: 50%; background: #eff449; color: #102441; font-weight: 900; }
+.emptyCard h2 { margin: 0; font-size: 34px; }
+.emptyCard p { max-width: 520px; margin: 12px auto 28px; color: #68758a; line-height: 1.7; }
+.createRow { display: flex; gap: 10px; max-width: 520px; margin: 0 auto; }
+.createRow input { flex: 1; min-width: 0; border: 1px solid #d8dde4; border-radius: 14px; padding: 14px 16px; background: white; }
+.createRow button, .saveBar button { border: 0; border-radius: 14px; padding: 14px 22px; background: #102f55; color: white; font-weight: 800; cursor: pointer; }
+.workspace { max-width: 1320px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(380px, .88fr); gap: 20px; }
+.drawCard, .rosterCard { border: 1px solid rgba(16,36,65,.08); border-radius: 30px; background: rgba(255,255,255,.88); box-shadow: 0 22px 60px rgba(44,54,67,.07); }
+.drawCard { padding: 28px; }
+.cardHeading, .rosterHeader { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.cardHeading span, .rosterHeader span { color: #7b8798; font-size: 12px; font-weight: 800; letter-spacing: .12em; }
+.cardHeading h2, .rosterHeader h2 { margin: 4px 0 0; font-size: 24px; }
+.cardHeading strong { color: #5f6f84; font-size: 14px; }
+.resultStage { min-height: 350px; margin: 24px 0 18px; border-radius: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; position: relative; background: linear-gradient(145deg, #f4f450 0%, #ecf168 58%, #dce8a5 100%); }
+.resultStage::after { content: ""; position: absolute; width: 170px; height: 170px; border-radius: 50%; right: -60px; bottom: -65px; background: #a4d8da; }
+.resultNumber { font-size: 13px; font-weight: 900; letter-spacing: .2em; color: rgba(16,36,65,.55); }
+.resultStage strong { max-width: 100%; margin-top: 8px; padding: 0 18px; font-size: clamp(36px, 7vw, 88px); letter-spacing: -.05em; text-align: center; z-index: 1; }
+.resultStage p { margin: 10px 0 0; color: rgba(16,36,65,.58); z-index: 1; }
+.drawButtonWrap { position: relative; width: 100%; }
+.drawButton { position: relative; width: 100%; min-height: 58px; overflow: hidden; border: 0; border-radius: 18px; padding: 17px; background: #102f55; color: white; font-size: 18px; font-weight: 900; cursor: pointer; }
+.drawButton:disabled { cursor: wait; opacity: 1; }
+.drawingButton { background: #194a78; }
+.drawingButton > span:first-child { opacity: .48; }
+.dog { position: absolute; left: 50%; top: -62px; z-index: 2; display: block; width: 58px; height: 58px; transform: translateX(-50%); pointer-events: none; object-fit: contain; mix-blend-mode: multiply; }
+.rosterCard { padding: 28px; }
+.clearButton { border: 0; background: transparent; color: #b4472e; cursor: pointer; }
+.rosterActions { display: flex; align-items: center; gap: 8px; }
+.clearButton, .deleteClassButton, .lockButton, .unlockButton { border-radius: 10px; padding: 9px 11px; }
+.lockButton, .unlockButton { border: 0; font-weight: 800; cursor: pointer; }
+.lockButton { background: #102f55; color: #fff; }
+.unlockButton { background: #eff449; color: #102441; }
+.clearButton { background: #fff4e8; }
+.deleteClassButton { border: 1px solid #efd4cd; background: #fff; color: #9e3425; cursor: pointer; }
+.clearButton:disabled, .deleteClassButton:disabled, .addStudentButton:disabled, .saveBar button:disabled, .studentRow button:disabled { cursor: not-allowed; opacity: .38; }
+.importPanel { display: flex; align-items: center; gap: 16px; margin-top: 22px; padding: 16px; border: 1px dashed #cbd3d9; border-radius: 16px; background: #f7f9f8; }
+.importPanel > div { flex: 1; min-width: 0; }
+.importPanel strong { display: block; color: #243a56; font-size: 14px; }
+.importPanel p { margin: 4px 0 0; color: #7b8798; font-size: 12px; line-height: 1.5; }
+.fileInput { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+.uploadButton { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 7px; border: 0; border-radius: 12px; padding: 11px 14px; background: #ed6c3c; color: #fff; font-size: 13px; font-weight: 800; cursor: pointer; }
+.uploadButton:disabled { cursor: not-allowed; opacity: .42; }
+.recognitionSpinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: recognitionSpin .7s linear infinite; }
+.columnLabels, .studentRow { display: grid; grid-template-columns: 48px 86px minmax(120px,1fr) 48px; gap: 8px; align-items: center; }
+.columnLabels { margin-top: 26px; padding: 0 8px 8px; color: #8a94a4; font-size: 11px; }
+.studentList { max-height: 365px; overflow-y: auto; }
+.studentRow { padding: 7px 8px; border-top: 1px solid #edf0f2; }
+.studentRow input[type="text"], .studentRow input:not([type]) { width: 100%; }
+.studentRow input { min-width: 0; border: 1px solid #dfe3e7; border-radius: 10px; padding: 10px; background: #fafbfb; }
+.studentRow input[type="checkbox"] { width: 17px; height: 17px; accent-color: #102f55; }
+.studentRow input:disabled { color: #68758a; background: #f0f1f2; cursor: not-allowed; }
+.studentRow button { border: 0; background: transparent; color: #a95743; cursor: pointer; padding: 5px 0; }
+.noStudents { margin: 36px 10px; color: #8a94a4; text-align: center; line-height: 1.6; }
+.addStudentButton { width: 100%; margin-top: 10px; padding: 12px; border: 1px dashed #b8c0ca; border-radius: 12px; background: transparent; color: #526177; cursor: pointer; }
+.saveBar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 22px; padding-top: 20px; border-top: 1px solid #e8eaed; }
+.saveBar p { margin: 0; color: #758195; font-size: 12px; line-height: 1.5; }
+.saveBar button { flex: 0 0 auto; }
+.notice { text-align: center; color: #b4472e; }
+
+@keyframes recognitionSpin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 900px) {
+  .page { padding-top: 30px; }
+  .header { flex-direction: column; }
+  .storageBadge { align-self: flex-start; }
+  .workspace { grid-template-columns: 1fr; }
+  .rosterCard { order: -1; }
+}
+
+@media (max-width: 560px) {
+  .page { padding-inline: 14px; }
+  .header h1 { font-size: 44px; }
+  .createRow { flex-direction: column; }
+  .drawCard, .rosterCard { padding: 19px; border-radius: 22px; }
+  .resultStage { min-height: 270px; }
+  .studentRow, .columnLabels { grid-template-columns: 34px 65px minmax(100px,1fr) 38px; gap: 5px; }
+  .saveBar { align-items: stretch; flex-direction: column; }
+  .rosterHeader { align-items: flex-start; }
+  .rosterActions { align-items: stretch; flex-direction: column; }
+  .importPanel { align-items: stretch; flex-direction: column; }
+  .uploadButton { justify-content: center; width: 100%; }
+}
